@@ -1,0 +1,36 @@
+[{
+    "actionPlanType" : "httprequest",
+    "name" : "ServiceNowGreenFieldTemplate",
+    "oneRequestPerEvent" : false,
+    "eventClampLimit" : -1,
+    "defaultCustomProperties" : [ ],
+    "method" : "POST",
+    "scheme" : "HTTPS",
+    "host" : "<snow_hostname>",
+    "port" : 0,
+    "path" : "/api/sn_em_connector/em/inbound_event",
+    "query" : "source=SGO-AppDynamics",
+    "urlCharset" : "UTF_8",
+    "authType" : "BASIC",
+    "authUsername" : "AppDynamicsAPI",
+    "authPassword" : "",
+    "headers" : [ ],
+    "payloadTemplate" : {
+      "httpRequestActionMediaType" : "application/json",
+      "charset" : "UTF_8",
+      "formDataPairs" : [ ],
+      "payload" : "{\n    \"source\": \"AppDynamics\"\n    ,\"testEvent\": false\n, \"account\": {\n        \"entityType\": \"$account.entityType\"\n        ,\"entityTypeDisplayName\": \"$account.entityTypeDisplayName\"\n        ,\"id\": \"$account.id\"\n        ,\"name\": \"$account.name\"\n        ,\"triggerTime\": \"$account.triggerTime\"\n    }\n    ,\"controllerUrl\": \"$controllerUrl\"\n    ,\"policy\": {\n        \"entityType\": \"$policy.entityType\"\n        ,\"entityTypeDisplayName\": \"$policy.entityTypeDisplayName\"\n        ,\"id\": \"$policy.id\"\n        ,\"name\": \"$policy.name\"\n        ,\"digest\": \"$policy.digest\"\n        ,\"digestDurationInMins\": \"$policy.digestDurationInMins\"\n    }\n    ,\"action\": {\n        \"entityType\": \"$action.entityType\"\n        ,\"entityTypeDisplayName\": \"$action.entityTypeDisplayName\"\n        ,\"id\": \"$action.id\"\n        ,\"name\": \"$action.name\"\n        ,\"triggerTime\": \"$action.triggerTime\"\n    }\n    ,\"topSeverity\": \"$topSeverity\"\n    ,\"topSeverityImage\": {\n        \"name\": \"$topSeverityImage.name\"\n        ,\"fileName\": \"$topSeverityImage.fileName\"\n        ,\"mimeContentRef\": \"$topSeverityImage.mimeContentRef\"\n        ,\"deepLink\": \"$topSeverityImage.deepLink\"\n    }\n    ,\"notificationConfigText\": \"$notificationConfigText\"\n    ,\"controllerUrl\": \"$controllerUrl\"\n    ,\"appDynamicsIcon\": {\n        \"name\": \"$appDynamicsIcon.name\"\n        ,\"fileName\": \"$appDynamicsIcon.fileName\"\n        ,\"mimeContentRef\": \"$appDynamicsIcon.mimeContentRef\"\n        ,\"deepLink\": \"$appDynamicsIcon.deepLink\"\n    }\n    ,\"appDynamicsLogo\": {\n        \"name\": \"$appDynamicsLogo.name\"\n        ,\"fileName\": \"$appDynamicsLogo.fileName\"\n        ,\"mimeContentRef\": \"$appDynamicsLogo.mimeContentRef\"\n        ,\"deepLink\": \"$appDynamicsLogo.deepLink\"\n    }\n    ,\"fullEventList\":[\n        #foreach(${event} in ${fullEventList})\n        #if($foreach.index > 0)\n        ,\n        #end\n        {\n            \"eventType\": \"$event.eventType\"\n            ,\"id\": \"$event.id\"\n            ,\"guid\": \"$event.guid\"\n            ,\"eventTypeKey\": \"$event.eventTypeKey\"\n            ,\"eventTime\": \"$event.eventTime\"\n            ,\"displayName\": \"$event.displayName\"\n            ,\"summaryMessage\": \"$event.summaryMessage\"\n            ,\"eventMessage\": \"$event.eventMessage\"\n            ,\"application\": {\n                \"entityType\": \"$event.application.entityType\"\n                ,\"entityTypeDisplayName\": \"$event.application.entityTypeDisplayName\"\n                ,\"id\": \"$event.application.id\"\n                ,\"name\": \"$event.application.name\"\n                ,\"triggerTime\": \"$event.application.triggerTime\"\n            }\n            ,\"tier\": {\n                \"entityType\": \"$event.tier.entityType\"\n                ,\"entityTypeDisplayName\": \"$event.tier.entityTypeDisplayName\"\n                ,\"id\": \"$event.tier.id\"\n                ,\"name\": \"$event.tier.name\"\n                ,\"triggerTime\": \"$event.tier.triggerTime\"\n            }\n            ,\"node\": {\n                \"entityType\": \"$event.node.entityType\"\n                ,\"entityTypeDisplayName\": \"$event.node.entityTypeDisplayName\"\n                ,\"id\": \"$event.node.id\"\n                ,\"name\": \"$event.node.name\"\n                ,\"triggerTime\": \"$event.node.triggerTime\"\n            }\n            ,\"affectedEntities\": [\n                #foreach(${entity} in ${event.affectedEntities})\n                #if($foreach.index > 0)\n                ,\n                #end\n                {\n                    \"entityType\": \"$entity.entityType\"\n                    ,\"entityTypeDisplayName\": \"$entity.entityTypeDisplayName\"\n                    ,\"id\": \"$entity.id\"\n                    ,\"name\": \"$entity.name\"\n                    ,\"triggerTime\": \"$entity.triggerTime\"\n                }\n                #end\n            ]\n            ,\"healthRuleEvent\": \"$event.healthRuleEvent\"\n            #if($event.healthRuleEvent == true)\n                ,\"healthRule\": {\n                    \"entityType\": \"$event.healthRule.entityType\"\n                    ,\"entityTypeDisplayName\": \"$event.healthRule.entityTypeDisplayName\"\n                    ,\"id\": \"$event.healthRule.id\"\n                    ,\"name\": \"$event.healthRule.name\"\n                    ,\"triggerTime\": \"$event.healthRule.triggerTime\"\n                }\n            #end\n            #if($event.healthRuleEvent == true)\n                ,\"incident\": {\n                    \"entityType\": \"$event.incident.entityType\"\n                    ,\"entityTypeDisplayName\": \"$event.incident.entityTypeDisplayName\"\n                    ,\"id\": \"$event.incident.id\"\n                    ,\"name\": \"$event.incident.name\"\n                    ,\"triggerTime\": \"$event.incident.triggerTime\"\n                }\n            #end\n            ,\"healthRuleViolationEvent\": \"$event.healthRuleViolationEvent\"\n            ,\"severity\": \"$event.severity\"\n            ,\"severityImage\": {\n                \"name\": \"$event.severityImage.name\"\n                ,\"fileName\": \"$event.severityImage.fileName\"\n                ,\"mimeContentRef\": \"$event.severityImage.mimeContentRef\"\n                ,\"deepLink\": \"$event.severityImage.deepLink\"\n            }\n            ,\"btPerformanceEvent\": \"$event.btPerformanceEvent\"\n            ,\"deepLink\": \"$event.deepLink\"\n        }\n        #end\n    ]\n    ,\"clampLimit\": \"$clampLimit\"\n    ,\"clamped\": \"$clamped\"\n}"
+    },
+    "connectTimeoutInMillis" : 5000,
+    "socketTimeoutInMillis" : 15000,
+    "maxFollowRedirects" : 0,
+    "responseMatchCriteriaAnyTemplate" : [ {
+      "statusCode" : 200,
+      "requireContent" : false,
+      "httpRequestActionMediaType" : null
+    } ],
+    "responseMatchCriteriaNoneTemplate" : [ ],
+    "testLogLevel" : "DEBUG",
+    "testPropertiesPairs" : [ ],
+    "eventTypeCountPairs" : [ ]
+  }]
