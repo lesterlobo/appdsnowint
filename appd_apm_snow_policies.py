@@ -35,6 +35,38 @@ def retrieve_token(client_id, client_secret, controller_url):
         return token
     else:
         raise Exception(f"API request failed with status code {tokenResponse.status_code}")
+    
+def get_applications(token, controller_url):
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json" 
+    }
+    #serverResponse = requests.get(controller_url + "/controller/rest/applications/Server%20%26%20Infrastructure%20Monitoring?output=JSON", headers=headers)
+    applications = requests.get(controller_url + "/controller/rest/applications?output=JSON", headers=headers) 
+
+    if (applications.ok):
+        print(applications.text)
+        apps = json.loads(applications.content.decode('utf-8'))
+    else:
+        print("Error Occured in retrieving Application IDs. Error Code." + str(applications.status_code))
+    
+    return apps
+
+def get_application_id(token, controller_url, applicationName):
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json" 
+    }
+    appResponse = requests.get(controller_url + "/controller/rest/applications/" + applicationName + "?output=JSON", headers=headers)
+
+    appid = ''
+    if (appResponse.ok):
+        appid = json.loads(appResponse.content.decode('utf-8'))[0]['id']
+        print(appid)
+    else:
+        print("Error Occured in retrieving Application ID. Error Code." + str(appResponse.status_code))
+    
+    return appid
 
 def create_app_policy(token, controller_url, appid, actionName):
     #get servers id for controller
@@ -111,17 +143,33 @@ def main(argv):
     client_id = ''
     client_secret = ""
 
-
     # retrieve api token
     token = retrieve_token(client_id, client_secret, controller_url)
 
-    # create snow http template
+    # Create SNOW HTTP Template, Create HTTP Action
     create_http_template(token, controller_url, "snow_template.json")
-    # create snow http action
-    create_http_action(token, controller_url, 22, "ServiceNowGreenFieldTemplate", "ServiceNow_GreenField_HTTPAction")
+
+    # Creating Polices for Server Application.
+    serverappid = get_application_id(token, controller_url, "Server%20%26%20Infrastructure%20Monitoring")
+    create_http_action(token, controller_url, serverappid, "ServiceNowGreenFieldTemplate", "ServiceNow_GreenField_HTTPAction")
+    create_app_policy(token, controller_url, serverappid, "ServiceNow_GreenField_HTTPAction")
     
-    # create snow http policy
-    create_app_policy(token, controller_url, 22, "ServiceNow_GreenField_HTTPAction")
+    # Creating Polices for Databases Application.
+    dbappid = get_application_id(token, controller_url, "Database Monitoring")
+    print(dbappid)
+    create_http_action(token, controller_url, dbappid, "ServiceNowGreenFieldTemplate", "ServiceNow_GreenField_HTTPAction")
+    create_app_policy(token, controller_url, dbappid, "ServiceNow_GreenField_HTTPAction")
+
+    # Creating Polices for All Applications
+    apps = get_applications(token, controller_url)
+    counter=0
+    for app in apps:
+        applicationid = apps[counter]['id']
+        #applicationName = apps[counter]['name']
+        token = retrieve_token(client_id, client_secret, controller_url)
+        create_http_action(token, controller_url, applicationid, "ServiceNowGreenFieldTemplate", "ServiceNow_GreenField_HTTPAction")
+        create_app_policy(token, controller_url, applicationid, "ServiceNow_GreenField_HTTPAction")
+        counter=counter+1
 
 if __name__ == "__main__":
     main(sys.argv[1:])
